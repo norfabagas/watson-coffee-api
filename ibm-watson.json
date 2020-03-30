@@ -1,0 +1,355 @@
+{
+  "intents": [
+    {
+      "intent": "ask_menu",
+      "examples": [
+        {
+          "text": "Show me the menu"
+        },
+        {
+          "text": "What do you have in the menu"
+        },
+        {
+          "text": "What do you have here"
+        },
+        {
+          "text": "Can I ask for the menu"
+        },
+        {
+          "text": "Can I have the menu please"
+        }
+      ],
+      "description": "Asking the bot about the menu"
+    },
+    {
+      "intent": "order_coffee",
+      "examples": [
+        {
+          "text": "Please give me"
+        },
+        {
+          "text": "I want to order"
+        },
+        {
+          "text": "Can I get"
+        },
+        {
+          "text": "I want"
+        },
+        {
+          "text": "I want to order 2 cups of coffee"
+        }
+      ],
+      "description": ""
+    },
+    {
+      "intent": "asking_price",
+      "examples": [
+        {
+          "text": "How much"
+        },
+        {
+          "text": "How much for a"
+        },
+        {
+          "text": "How much for"
+        }
+      ],
+      "description": ""
+    }
+  ],
+  "entities": [
+    {
+      "entity": "beverage",
+      "values": [
+        {
+          "type": "synonyms",
+          "value": "Coffee",
+          "synonyms": []
+        },
+        {
+          "type": "synonyms",
+          "value": "Cappuccino",
+          "synonyms": []
+        },
+        {
+          "type": "synonyms",
+          "value": "Latte",
+          "synonyms": []
+        }
+      ],
+      "fuzzy_match": true
+    },
+    {
+      "entity": "sys-number",
+      "values": []
+    },
+    {
+      "entity": "sys-person",
+      "values": []
+    }
+  ],
+  "metadata": {
+    "api_version": {
+      "major_version": "v2",
+      "minor_version": "2018-11-08"
+    },
+    "from-sample": true
+  },
+  "webhooks": [
+    {
+      "url": "https://watson-coffee-api.herokuapp.com/api/v1/menu",
+      "name": "main_webhook",
+      "headers": []
+    }
+  ],
+  "dialog_nodes": [
+    {
+      "type": "response_condition",
+      "output": {
+        "text": {
+          "values": [
+            "We cannot process your order right now, sorry."
+          ],
+          "selection_policy": "sequential"
+        }
+      },
+      "parent": "node_1_1585570290018",
+      "conditions": "anything_else",
+      "dialog_node": "response_10_1585570326342",
+      "previous_sibling": "response_3_1585570325020"
+    },
+    {
+      "type": "response_condition",
+      "output": {
+        "generic": [
+          {
+            "values": [
+              {
+                "text": "Sure, we will make @sys-number cup(s) of @beverage for you. Your bill is IDR $webhook_result_3.price K. Please wait"
+              }
+            ],
+            "response_type": "text",
+            "selection_policy": "sequential"
+          }
+        ]
+      },
+      "parent": "node_1_1585570290018",
+      "conditions": "$webhook_result_3",
+      "dialog_node": "response_3_1585570325020"
+    },
+    {
+      "type": "response_condition",
+      "output": {
+        "text": {
+          "values": [
+            "Can not be found"
+          ],
+          "selection_policy": "sequential"
+        }
+      },
+      "parent": "node_1_1585564419781",
+      "conditions": "anything_else",
+      "dialog_node": "response_7_1585564439973",
+      "previous_sibling": "response_5_1585564438374"
+    },
+    {
+      "type": "response_condition",
+      "output": {
+        "generic": [
+          {
+            "values": [
+              {
+                "text": "We have: $webhook_result_1.menu"
+              }
+            ],
+            "response_type": "text",
+            "selection_policy": "sequential"
+          }
+        ]
+      },
+      "parent": "node_1_1585564419781",
+      "conditions": "$webhook_result_1",
+      "dialog_node": "response_5_1585564438374"
+    },
+    {
+      "type": "response_condition",
+      "output": {
+        "text": {
+          "values": [
+            "It costs IDR $webhook_result_2.price K for @beverage"
+          ],
+          "selection_policy": "sequential"
+        }
+      },
+      "parent": "node_4_1585567060211",
+      "conditions": "$webhook_result_2",
+      "dialog_node": "response_8_1585567893352"
+    },
+    {
+      "type": "standard",
+      "title": "Order coffee",
+      "actions": [
+        {
+          "name": "main_webhook",
+          "type": "webhook",
+          "parameters": {
+            "for": "@beverage",
+            "get": "show_price",
+            "quantity": "@sys-number"
+          },
+          "result_variable": "webhook_result_3"
+        }
+      ],
+      "metadata": {
+        "_customization": {
+          "mcr": true
+        }
+      },
+      "conditions": "#order_coffee && @beverage && @sys-number",
+      "dialog_node": "node_1_1585570290018",
+      "previous_sibling": "node_3_1585569860603"
+    },
+    {
+      "type": "standard",
+      "title": "Asking for unavailable menu",
+      "output": {
+        "generic": [
+          {
+            "values": [
+              {
+                "text": "Sorry that menu is not available yet"
+              }
+            ],
+            "response_type": "text",
+            "selection_policy": "sequential"
+          }
+        ]
+      },
+      "conditions": "#asking_price &&      @beverage != \"Coffee\" &&     @beverage != \"Cappuccino\" &&   @beverage != \"Latte\"",
+      "digress_in": "does_not_return",
+      "dialog_node": "node_3_1585569860603",
+      "previous_sibling": "Welcome"
+    },
+    {
+      "type": "standard",
+      "title": "asking menu",
+      "actions": [
+        {
+          "name": "main_webhook",
+          "type": "webhook",
+          "parameters": {
+            "get": "show_menu"
+          },
+          "result_variable": "webhook_result_1"
+        }
+      ],
+      "metadata": {
+        "_customization": {
+          "mcr": true
+        }
+      },
+      "conditions": "#ask_menu",
+      "dialog_node": "node_1_1585564419781",
+      "previous_sibling": "node_1_1585570290018"
+    },
+    {
+      "type": "standard",
+      "title": "Asking for coffee price",
+      "actions": [
+        {
+          "name": "main_webhook",
+          "type": "webhook",
+          "parameters": {
+            "for": "@beverage",
+            "get": "show_price",
+            "quantity": "@sys-number"
+          },
+          "result_variable": "webhook_result_2"
+        }
+      ],
+      "metadata": {
+        "_customization": {
+          "mcr": true
+        }
+      },
+      "conditions": "#asking_price && @beverage || @sys-number",
+      "digress_in": "does_not_return",
+      "dialog_node": "node_4_1585567060211",
+      "previous_sibling": "node_1_1585564419781"
+    },
+    {
+      "type": "standard",
+      "title": "Anything else",
+      "output": {
+        "generic": [
+          {
+            "values": [
+              {
+                "text": "Here are some suggestions with what you can do here"
+              },
+              {
+                "text": "-> Show me the menu"
+              },
+              {
+                "text": "-> I want to order 1 cup of latte, please"
+              },
+              {
+                "text": "-> How much for a cup of coffee?"
+              }
+            ],
+            "response_type": "text",
+            "selection_policy": "multiline"
+          }
+        ]
+      },
+      "conditions": "anything_else",
+      "dialog_node": "Anything else",
+      "previous_sibling": "node_4_1585567060211",
+      "disambiguation_opt_out": true
+    },
+    {
+      "type": "standard",
+      "title": "Welcome",
+      "output": {
+        "text": {
+          "values": [
+            "Hello. I can help to order your coffee. Please ask us about the menu."
+          ],
+          "selection_policy": "sequential"
+        }
+      },
+      "conditions": "welcome",
+      "dialog_node": "Welcome"
+    }
+  ],
+  "counterexamples": [
+    {
+      "text": "https://www.google.com"
+    }
+  ],
+  "system_settings": {
+    "off_topic": {
+      "enabled": true
+    },
+    "disambiguation": {
+      "prompt": "Did you mean:",
+      "enabled": true,
+      "randomize": true,
+      "max_suggestions": 5,
+      "suggestion_text_policy": "title",
+      "none_of_the_above_prompt": "None of the above"
+    },
+    "system_entities": {
+      "enabled": true
+    },
+    "human_agent_assist": {
+      "prompt": "Did you mean:"
+    },
+    "spelling_auto_correct": true
+  },
+  "learning_opt_out": false,
+  "name": "My first skill",
+  "language": "en",
+  "description": ""
+}
