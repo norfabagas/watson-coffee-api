@@ -1,4 +1,9 @@
 class Api::V1::CoffeesController < ApplicationController
+  def index
+    coffees = Coffee.all
+    render :json => coffees
+  end
+
   def menu
     menu = {}
     coffees = Coffee.all.each do |val|
