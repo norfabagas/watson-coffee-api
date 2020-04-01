@@ -1,5 +1,10 @@
 class Api::V1::CoffeesController < ApplicationController
   def menu
+    menu = {}
+    coffees = Coffee.all.each do |val|
+      menu[val.name.parameterize.underscore] = val.price
+    end
+
     # beverages price
     coffee = 10
     cappuccino = 15
@@ -18,18 +23,18 @@ class Api::V1::CoffeesController < ApplicationController
         :menu => "Coffee, latte, and Cappuccino"
       }
     elsif params[:get] == 'show_price'
-      case params[:for].downcase
-      when 'coffee'
-        response = {:price => coffee * quantity, :quantity => quantity}
-      when 'cappuccino'
-        response = {:price => cappuccino * quantity, :quantity => quantity}
-      when 'latte'
-        response = {:price => latte * quantity, :quantity => quantity}
+      if menu[params[:for].parameterize.underscore]
+        response = {:price => menu[params[:for].parameterize.underscore] * quantity, :quantity => quantity}
       else
         response = {:price => 0}
       end
     end
 
     render :json  => response
+  end
+
+  private
+  def deparametrize(str)
+    str.split("_").join(" ").humanize
   end
 end
