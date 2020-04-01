@@ -64,17 +64,32 @@
       "values": [
         {
           "type": "synonyms",
+          "value": "Tea",
+          "synonyms": []
+        },
+        {
+          "type": "synonyms",
+          "value": "Espresso",
+          "synonyms": []
+        },
+        {
+          "type": "synonyms",
+          "value": "Mocha",
+          "synonyms": []
+        },
+        {
+          "type": "synonyms",
           "value": "Coffee",
           "synonyms": []
         },
         {
           "type": "synonyms",
-          "value": "Cappuccino",
+          "value": "Hazelnut Latte",
           "synonyms": []
         },
         {
           "type": "synonyms",
-          "value": "Latte",
+          "value": "Americano",
           "synonyms": []
         }
       ],
