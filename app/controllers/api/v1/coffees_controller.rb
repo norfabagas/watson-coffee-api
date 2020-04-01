@@ -6,7 +6,7 @@ class Api::V1::CoffeesController < ApplicationController
 
   def menu
     menu = {}
-    coffees = Coffee.all.each do |val|
+    Coffee.all.each do |val|
       menu[val.name.parameterize.underscore] = val.price
     end
 
@@ -24,8 +24,14 @@ class Api::V1::CoffeesController < ApplicationController
 
     # parameters query
     if params[:get] == 'show_menu'
+      beverage_menu = ""
+      coffees = Coffee.all
+      coffees.each do |val, index|
+        beverage_menu += val.name
+        beverage_menu += ", "
+      end
       response = {
-        :menu => "Coffee, latte, and Cappuccino"
+        :menu => beverage_menu.strip
       }
     elsif params[:get] == 'show_price'
       if menu[params[:for].parameterize.underscore]
